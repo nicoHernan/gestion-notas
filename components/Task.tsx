@@ -16,7 +16,7 @@ const Task: React.FC <TaskProps> = ({taskModel, onPress, textStyle, containerSty
         <View style = {[styles.container, containerStyle]}>
             <TouchableOpacity onPress={onPress}>
                 <Text style = {[styles.taskText, textStyle]}>
-                    {taskModel?.task}
+                    {taskModel?.content}
                 </Text>
             </TouchableOpacity>
         </View>

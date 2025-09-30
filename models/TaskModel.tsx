@@ -1,5 +1,5 @@
 export type TaskModel = {
-  taskId: string;
-  task: string;
+  id: string;
+  content: string;
   isCompleted: boolean;
 };
