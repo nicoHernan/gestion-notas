@@ -7,7 +7,6 @@ import { TaskModel } from '../models/TaskModel';
 import ButtonNavigate from '../components/ButtonNavigate';
 
 type HomeScreenProps = {
-    fullname?: string ;
     navigation: NativeStackNavigationProp<RootStackParamList, 'Home'> ;
 };
 
@@ -17,7 +16,7 @@ const tasks: TaskModel[] = [
     { id: '2', content: 'estudiar programación', isCompleted: false }
 ];
 
-const HomeScreen: React.FC<HomeScreenProps> = ({fullname = '', navigation}) => {
+const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
 const handleGoToEditTask = (taskModel: TaskModel) => {
         navigation.navigate('Edit', {taskModel} );
     };
@@ -25,7 +24,7 @@ const handleGoToEditTask = (taskModel: TaskModel) => {
     return (
         <View style = {styles.container}>
             <Text> 
-                ¡Welcome to Pendientes - App, {fullname} !
+                ¡Welcome to Pendientes - App !
             </Text>
             <Image
                 source={{ uri: 'https://picsum.photos/id/20/295/200' }}
