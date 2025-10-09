@@ -1,17 +1,17 @@
 import React from 'react';
-import {Text, View, Alert, Image, StyleSheet, FlatList } from 'react-native';
+import {Text, View, StyleSheet, FlatList } from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from './NavigationTypes';
 import Task from '../components/Task';
 import { TaskModel } from '../models/TaskModel';
-import ButtonNavigate from '../components/ButtonNavigate';
+import { useState } from 'react';
 
 type HomeScreenProps = {
     navigation: NativeStackNavigationProp<RootStackParamList, 'Home'> ;
 };
 
 
-const tasks: TaskModel[] = [
+const initialTasks: TaskModel[] = [
     { id: '1', content: 'Comprar martillo', isCompleted: false },
     { id: '2', content: 'estudiar programación', isCompleted: false },
     { id: '3', content: 'estudiar ingles', isCompleted: false },
@@ -27,33 +27,44 @@ const tasks: TaskModel[] = [
 ];
 
 const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
-const handleGoToEditTask = (taskModel: TaskModel) => {
+
+    const [taskModel, setTasks] = useState(initialTasks);
+
+    const handleToggleComplete = (taskId: string) => {
+        const updatedTasks = taskModel.map(taskModel => {
+            if (taskModel.id == taskId) {
+                return { ...taskModel, isCompleted: !taskModel.isCompleted };
+            }
+            return taskModel;
+        });
+
+        setTasks(updatedTasks);
+    };
+
+    //TODO -> const handleShareTask = () => {};
+
+    const handleGoToEditTask = (taskModel: TaskModel) => {
         navigation.navigate('Edit', {taskModel} );
     };
+
 
     const renderTaskItem = ({ item }: { item: TaskModel }) => (
         <Task
             key={item.id}
             taskModel={item}
             onPress={() => handleGoToEditTask(item)}
+            onToggleComplete={() => handleToggleComplete(item.id)}
+            onShare={() => {}} 
         />
     );
 
     return (
         <View style = {styles.container}>
-            <Text> 
+            <Text style = {styles.welcomeText}> 
                 ¡Welcome to Pendientes - App !
             </Text>
-            <Image
-                source={{ uri: 'https://picsum.photos/id/20/295/200' }}
-                style= {styles.image}
-            />
-            <ButtonNavigate
-                buttonTitle="Next"
-                onPress={() => Alert.alert('¡here we go!')}
-            />
              <FlatList
-                data={tasks}
+                data={taskModel}
                 keyExtractor={(item) => item.id}
                 renderItem={renderTaskItem}
                 style={styles.taskList}
@@ -69,15 +80,15 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
     },
-    image: {
-        width: 295,
-        height: 200,
-        borderRadius: 10,
+    welcomeText: {
+        fontSize: 21,
+        marginTop: 70,
+        marginBottom: 70,
     },
     taskList: {
         width: '100%', 
         flex: 1,
-        marginTop: 10,
+        marginTop: 20,
         paddingHorizontal: 20,
         paddingBottom: 20
     }
