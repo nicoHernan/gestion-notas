@@ -16,17 +16,17 @@ type EditTaskScreenProps = {
 
 
 const EditTaskScreen: React.FC<EditTaskScreenProps> = ({ route, navigation }) => {
-  const handleSave = () => {
-    console.log(taskModel)
-        //navigation.goBack();
-        //TODO -> implementar guardar edicion
+    const{taskModel: initialTask, onSave} = route.params ;
+    const [taskModel, setTask] = useState<TaskModel>(initialTask) ; 
+
+    const handleSave = () => {
+        onSave(taskModel) ;
+        navigation.goBack() ;
     };
 
     const handleChangeContent = (newContent: string) =>{
         setTask({...taskModel, content : newContent})
     }
-
-    const [taskModel, setTask] = useState<TaskModel>(route.params.taskModel ) ;
 
     return (
         <View style={styles.container}>
