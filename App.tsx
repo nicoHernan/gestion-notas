@@ -1,12 +1,13 @@
 import React from 'react';
 import HomeScreen from './screens/HomeScreen';
-import EditTaskScreen from './screens/EditTaskScreen' ;
+import EditScreen from './screens/EditScreen';
 import ProfileScreen from './screens/ProfileScreen';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { RootStackParamList } from './screens/NavigationTypes';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Icon from 'react-native-vector-icons/Ionicons';
+import ListDetailScreen from './screens/ListDetailScreen';
 
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -21,8 +22,13 @@ const TaskStack = () => (
             options={{ headerShown: false }} 
         />
         <Stack.Screen
+            name="ListDetail"
+            component={ListDetailScreen}
+            options={{ title: 'Detalle de Lista' }}
+        />
+        <Stack.Screen
             name="Edit"
-            component={EditTaskScreen}
+            component={EditScreen}
             options={{ title: 'Editar Tarea' }}
         />
     </Stack.Navigator>

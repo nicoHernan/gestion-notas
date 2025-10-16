@@ -1,119 +1,62 @@
 import React from 'react';
-import {Text, View, StyleSheet, FlatList, TextInput, TouchableOpacity  } from 'react-native';
+import {Text, View, StyleSheet } from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from './NavigationTypes';
-import Task from '../components/Task';
-import { TaskModel } from '../models/TaskModel';
 import { useState } from 'react';
-import Icon from 'react-native-vector-icons/Ionicons';
+import BoardCard from '../components/BoardCard';
+import { ListModel } from '../models/ListModel';
 
+
+const generateUniqueId = (): string => {
+    return Date.now().toString(36) + Math.random().toString(36).substring(2);
+};
 
 type HomeScreenProps = {
     navigation: NativeStackNavigationProp<RootStackParamList, 'Home'> ;
 };
 
-
-const initialTasks: TaskModel[] = [
-    { id: '1', content: 'Comprar martillo', isCompleted: false },
-    { id: '2', content: 'estudiar programación', isCompleted: false },
-    { id: '3', content: 'estudiar ingles', isCompleted: false },
-    { id: '4', content: 'cocinar', isCompleted: false },
-    { id: '5', content: 'correr', isCompleted: false },
-    { id: '6', content: 'lavar la ropa', isCompleted: false },
-    { id: '7', content: 'pescar', isCompleted: false },
-    { id: '8', content: 'futbol', isCompleted: false },
-    { id: '9', content: 'dormir', isCompleted: false },
-    { id: '10', content: 'ver tv', isCompleted: false },
-    { id: '11', content: 'examen', isCompleted: false },
-    { id: '12', content: 'andar en bici', isCompleted: false }
+const initialLists: ListModel[] = [
+    { 
+    id: 'list-1', 
+    content: 'Tareas Pendientes', 
+    tasks: [
+        { id: '1', content: 'Comprar martillo', isCompleted: false },
+        { id: '2', content: 'estudiar programación', isCompleted: false }
+    ]
+    },
 ];
+
 
 const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
 
-    const [taskModel, setTasks] = useState(initialTasks) ;
-    const [newTaskContent, setNewTaskContent] = useState('') ;
+    const [list, setList] = useState<ListModel[]>(initialLists) ;
+    const boardTitle = "Bienvenido/a Pendientes App";
 
-    const handleTaskUpdate = (updatedTask: TaskModel) =>{
-        const updatedTasks = taskModel.map(taskModel => {
-            if (taskModel.id == updatedTask.id) {
-                return updatedTask; 
-            }
-            return taskModel; 
-        });
-        setTasks(updatedTasks);
+    const handleAddList = () => {
+        const newList: ListModel = {
+            id: generateUniqueId(), 
+            content: `Nueva Lista ${list.length + 1}`,
+            tasks: [],
+        };
+        setList([...list, newList]);
     }
 
-    const handleAddTask = () => {
-        if (newTaskContent == '') {
-            return;
-        }
-    
-        const newId = (taskModel.length + 1).toString(); 
-    
-        const newTask: TaskModel = {
-            id: newId, 
-            content: newTaskContent, 
-            isCompleted: false,
-        };
-
-        setTasks([newTask, ...taskModel]);
-        setNewTaskContent('');
+    const handleListPress = (listId: string) => {
+        navigation.navigate('ListDetail', { listId });
     };
-
-
-    const handleToggleComplete = (taskId: string) => {
-        const updatedTasks = taskModel.map(taskModel => {
-            if (taskModel.id == taskId) {
-                return { ...taskModel, isCompleted: !taskModel.isCompleted };
-            }
-            return taskModel;
-        });
-
-        setTasks(updatedTasks);
-    };
-
-
-    //TODO -> const handleShareTask = () => {};
-
-
-    const handleGoToEditTask = (taskModel: TaskModel) => {
-        navigation.navigate(
-            'Edit', 
-            {taskModel: taskModel,onSave: handleTaskUpdate}) ;
-    };
-
-
-    const renderTaskItem = ({ item }: { item: TaskModel }) => (
-        <Task
-            key={item.id}
-            taskModel={item}
-            onPress={() => handleGoToEditTask(item)}
-            onToggleComplete={() => handleToggleComplete(item.id)}
-            onShare={() => {}} 
-        />
-    );
 
     return (
         <View style = {styles.container}>
             <Text style = {styles.welcomeText}> 
-                ¡Bienvenido a Pendientes - App !
+                {boardTitle}
             </Text>
-             <FlatList
-                data={taskModel}
-                keyExtractor={(item) => item.id}
-                renderItem={renderTaskItem}
-                style={styles.taskList}
+
+            <BoardCard
+            boardTitle= "titulo_board_Card"
+            listModel={list}
+            onAddListPress={handleAddList}
+            onListPress={handleListPress}
             />
-             <View style={styles.taskList}>
-                <TextInput
-                    placeholder="Escribe una nueva tarea..."
-                    value={newTaskContent}
-                    onChangeText={setNewTaskContent} 
-                />
-                <TouchableOpacity onPress={handleAddTask}>
-                    <Icon name="checkmark-circle" size={36} color="#6e92fcff" />
-                </TouchableOpacity>
-            </View>
         </View>
     );
 };
@@ -129,13 +72,6 @@ const styles = StyleSheet.create({
         fontSize: 21,
         marginTop: 70,
         marginBottom: 70,
-    },
-    taskList: {
-        width: '100%', 
-        flex: 1,
-        marginTop: 20,
-        paddingHorizontal: 20,
-        paddingBottom: 20
     }
 });
 

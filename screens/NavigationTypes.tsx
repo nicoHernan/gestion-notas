@@ -7,4 +7,5 @@ export type RootStackParamList = {
         onSave: (updateTask: TaskModel) => void ;
     } ;
     Profile: undefined ;
+    ListDetail: { listId: string }; 
 };

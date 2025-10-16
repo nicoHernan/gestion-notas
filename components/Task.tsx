@@ -18,7 +18,7 @@ const Task: React.FC <TaskProps> = ({
     textStyle,
     containerStyle, 
     onToggleComplete,
-    onShare,        
+    onShare     
 }) => {
     
     const checkboxIcon = taskModel?.isCompleted ? 'checkbox-outline' : 'square-outline'; 
