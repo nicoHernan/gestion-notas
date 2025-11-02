@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { View, Text, StyleSheet, TextInput, Button, TouchableOpacity,FlatList  } from 'react-native';
+import { View, Text, StyleSheet, TextInput, Share, TouchableOpacity,FlatList, Alert  } from 'react-native';
 import { useRoute,RouteProp } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from './NavigationTypes';
@@ -15,15 +15,14 @@ type ListDetailScreenProps  = {
     navigation: NativeStackNavigationProp<RootStackParamList, 'ListDetail'> ;
 };
 
-const initialTasks: TaskModel[] = [
-    { id: '1', content: 'esto es una tarea de prueba', isCompleted: false },
-    { id: '2', content: 'otra tarea de prueba', isCompleted: true },
-];
+const initialTasks: TaskModel[] = [];
+
+
 
 const ListDetailScreen: React.FC<ListDetailScreenProps> = ({ route, navigation }) => {
     const{listId} = route.params ;
 
-    const [taskModel, setTask] = useState<TaskModel[]>(initialTasks) ;
+    const [taskModel, setTask] = useState<TaskModel[]>([]) ;
     const [newTaskContent, setNewTaskContent] = useState('');
   
     const handleAddTask = () => {
@@ -42,6 +41,33 @@ const ListDetailScreen: React.FC<ListDetailScreenProps> = ({ route, navigation }
         setTask([newTask, ...taskModel]);
         setNewTaskContent('');
     };
+
+
+
+    const handleShareList = async () => {
+    
+        const listTitle = `Lista de Pendientes: ${listId}`; 
+    
+        const listBody = taskModel.map((taskModel, index) => 
+            `${index + 1}. [${taskModel.isCompleted ? '✓' : ' '}] ${taskModel.content}`
+            ).join('\n');
+    
+        const messageContent = `${listTitle}\n\n${listBody}`;
+
+        try {
+            await Share.share({
+                message: messageContent,
+                title: listTitle,
+                }, 
+            {
+                dialogTitle: 'Compartir mis Pendientes',
+                subject: listTitle,
+            });
+        }catch (error) {
+            Alert.alert("Error al Compartir", "No se pudo compartir la lista. Intenta de nuevo.");
+        }
+    } ;
+
 
 
     const handleTaskUpdate = (updatedTask: TaskModel) =>{
@@ -80,10 +106,10 @@ const ListDetailScreen: React.FC<ListDetailScreenProps> = ({ route, navigation }
             key={item.id}
             taskModel={item}
             onPress={() => handleGoToEditTask(item)}
-            onToggleComplete={() => handleToggleComplete(item.id)}
-            onShare={() => {}} 
+            onToggleComplete={() => handleToggleComplete(item.id)} 
         />
     );
+
 
     return (
         <View style={styles.container}>
@@ -102,11 +128,22 @@ const ListDetailScreen: React.FC<ListDetailScreenProps> = ({ route, navigation }
                     onChangeText={setNewTaskContent} 
                 />
                 <TouchableOpacity 
-                    onPress={handleAddTask} style={styles.addButton}>
+                    onPress={handleAddTask} style={styles.addButton}
+                >
                     <Icon 
                         name="add-circle" 
                         size={36} 
                         color="#6e92fcff" 
+                    />
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                    onPress={handleShareList}
+                >
+                    <Icon 
+                        name="share-outline" 
+                        size={22} 
+                        color="#007AFF"
                     />
                 </TouchableOpacity>
             </View>

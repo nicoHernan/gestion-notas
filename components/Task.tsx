@@ -8,8 +8,7 @@ type TaskProps = {
     onPress: () => void ;
     textStyle?: StyleProp<TextStyle> ;
     containerStyle?: StyleProp<ViewStyle> ;
-    onToggleComplete: () => void; 
-    onShare: () => void;
+    onToggleComplete: () => void;
 };
 
 const Task: React.FC <TaskProps> = ({
@@ -17,8 +16,7 @@ const Task: React.FC <TaskProps> = ({
     onPress, 
     textStyle,
     containerStyle, 
-    onToggleComplete,
-    onShare     
+    onToggleComplete     
 }) => {
     
     const checkboxIcon = taskModel?.isCompleted ? 'checkbox-outline' : 'square-outline'; 
@@ -47,17 +45,7 @@ const Task: React.FC <TaskProps> = ({
                     {taskModel?.content} 
                 </Text>
             </TouchableOpacity>
-
-            <TouchableOpacity 
-                onPress={onShare} 
-                style={styles.iconButton}
-            >
-                 <Icon 
-                    name="share-outline" 
-                    size={22} 
-                    color="#007AFF"
-                />
-            </TouchableOpacity>
+            
         </View>
     );
 }
