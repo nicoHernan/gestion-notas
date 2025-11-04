@@ -1,5 +1,5 @@
 import React from 'react';
-import {Text, View, StyleSheet, FlatList } from 'react-native';
+import {Text, View, StyleSheet, FlatList, TextInput } from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from './NavigationTypes';
 import { useState } from 'react';
@@ -7,6 +7,7 @@ import BoardCard from '../components/BoardCard';
 import { ListModel } from '../models/ListModel';
 import AddButton from '../components/AddButton';
 import { BoardModel } from '../models/BoardModel';
+
 
 
 type HomeScreenProps = {
@@ -30,9 +31,40 @@ const initialBoards: BoardModel[] = [
 
 const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
 
+    const [editingBoardId, setEditingBoardId] = useState<string | null>(null) ;
+    const [newBoardTitle, setNewBoardTitle] = useState('') ;
+
     const [board, setBoard] = useState<BoardModel[]>(initialBoards) ;
- 
     const boardTitle = "Bienvenido/a Pendientes App";
+
+
+    const handleEditBoardStart = (boardToEdit: BoardModel) => {
+        setEditingBoardId(boardToEdit.id);
+        setNewBoardTitle(boardToEdit.title);
+    }
+
+    const handleCancelEditBoard = () => {
+        setEditingBoardId(null);
+    };
+
+
+    const handleSaveBoardTitle = (boardId: string) => {
+        if (newBoardTitle == '') {
+            alert('El título no puede estar vacío.');
+            return;
+        }
+
+        const updatedBoards = board.map(boardModel => {
+            if (boardModel.id == boardId) {
+                return { ...boardModel, title: newBoardTitle }; 
+            }
+            return boardModel;
+        });
+
+        setBoard(updatedBoards);
+        setEditingBoardId(null); 
+    };
+
 
 
     const handleAddBoard = () => {
@@ -83,10 +115,17 @@ const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
     const renderBoardItem = ({ item }: { item: BoardModel }) => (
         <BoardCard
             key={item.id}
+            boardId= {item.id}
             boardTitle= {item.title}
             listModel={item.lists}
+            isEditing={editingBoardId == item.id}
+            newBoardTitle={newBoardTitle}
+            onChangeBoardTitle={setNewBoardTitle}
             onAddListPress={() => handleAddList(item.id)}
             onListPress = {handleListPress}
+            onEditBoardPress={() => handleEditBoardStart(item)}
+            onSaveBoardPress = {handleSaveBoardTitle}
+            onCancelPress={handleCancelEditBoard}
         />
     );
 
@@ -96,17 +135,19 @@ const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
             <Text style = {styles.welcomeText}> 
                 {boardTitle}
             </Text>
-            <AddButton
-                onPress = {handleAddBoard}
-            />
 
             <FlatList
+                style={styles.boardList}
+                contentContainerStyle={styles.boardListContent}
                 data = {board}
                 keyExtractor={(item) => item.id}
                 renderItem={renderBoardItem}
             />
-
-
+            <View style={styles.addButtonContainer}>
+                <AddButton
+                    onPress = {handleAddBoard}
+                />
+            </View>
         </View>
     );
 };
@@ -122,6 +163,20 @@ const styles = StyleSheet.create({
         fontSize: 21,
         marginTop: 30,
         marginBottom: 20
+    },
+    boardList: {
+        width: '100%', 
+        flex: 1, 
+        paddingHorizontal: 10,
+    },
+    boardListContent: {
+        paddingBottom: 80, 
+    },
+    addButtonContainer: {
+        position: 'absolute',
+        bottom: 30, 
+        right: 20,
+        zIndex: 10, 
     }
 });
 
