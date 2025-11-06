@@ -14,12 +14,21 @@ type BoardCardProps = {
     onListPress: (listId: string) => void; 
     textStyle?: StyleProp<TextStyle> ;
     containerStyle?: StyleProp<ViewStyle> ;
-    isEditing: boolean;
+
+    isEditingBoardId: boolean;
     newBoardTitle: string;
     onChangeBoardTitle: (text: string) => void;
     onEditBoardPress: (board: BoardModel) => void ;
     onSaveBoardPress: (boardId: string) => void ;
-    onCancelPress: () => void;
+    onCancelBoardPress: () => void;
+
+    
+    isEditingListId: string | null;
+    newListTitle: string;
+    onChangeListTitle: (text: string) => void;
+    onEditListPress: (list: ListModel) => void ;
+    onSaveListPress: (listId: string, boardId: string) => void ;
+    onCancelListPress: () => void;
 }
 
 const BoardCard: React.FC<BoardCardProps> = ({
@@ -30,12 +39,20 @@ const BoardCard: React.FC<BoardCardProps> = ({
   onListPress,
   textStyle,
   containerStyle,
-  isEditing,
+
+  isEditingBoardId,
   newBoardTitle,
   onChangeBoardTitle,
   onEditBoardPress,
   onSaveBoardPress,
-  onCancelPress
+  onCancelBoardPress,
+
+  isEditingListId,
+  newListTitle,
+  onChangeListTitle,
+  onEditListPress,
+  onSaveListPress,
+  onCancelListPress
   }) => {
     
     const currentBoard: BoardModel = {
@@ -43,12 +60,13 @@ const BoardCard: React.FC<BoardCardProps> = ({
         title: boardTitle,
         lists: listModel || []
     };
+
   
     return (
         <View style={styles.boardContainer}>
           <View style={styles.header}>
 
-            {isEditing ? (
+            {isEditingBoardId ? (
               <View style={styles.editControls}>
                 <TextInput
                   style={styles.editInput}
@@ -69,7 +87,7 @@ const BoardCard: React.FC<BoardCardProps> = ({
 
                 <TouchableOpacity
                   style={styles.cancelButton} 
-                  onPress={onCancelPress}
+                  onPress={onCancelBoardPress}
                 >
                   <Icon 
                     name="close-circle-outline" 
@@ -106,6 +124,7 @@ const BoardCard: React.FC<BoardCardProps> = ({
               </View>
               )
             }
+
           </View>
 
             <View style={styles.listsContainer}>
@@ -113,11 +132,18 @@ const BoardCard: React.FC<BoardCardProps> = ({
                 <ListCard 
                   key={listModel.id}
                   listModel={listModel}
+  
+                  isEditing={isEditingListId == listModel.id}
+                  newTitle={newListTitle}
+                  onChangeText={onChangeListTitle}
+                  onEditPress={() => onEditListPress(listModel)} 
+                  onSavePress={() => onSaveListPress(listModel.id, boardId)}
+                  onCancelPress={onCancelListPress}
                   onPress={() => onListPress(listModel.id)}
                 />
                 ))
               }
-          </View>
+            </View>
         </View>
     );
   };
@@ -191,6 +217,23 @@ const styles = StyleSheet.create({
     headerActions: { 
         flexDirection: 'row', 
         alignItems: 'center' 
+    },
+    editListControls: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        flex: 1,
+        marginRight: 5
+    },
+    editListInput: {
+        flex: 1, 
+        backgroundColor: '#f9f9f9',
+        borderRadius: 8,
+        padding: 8,
+        marginRight: 10,
+        fontWeight: 'bold',
+        fontSize: 18, 
+        borderWidth: 1,
+        borderColor: '#ccc',
     },
 });
 

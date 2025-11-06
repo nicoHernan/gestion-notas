@@ -31,11 +31,56 @@ const initialBoards: BoardModel[] = [
 
 const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
 
+    const [editingListId, setEditingListId] = useState<string | null>(null);
+    const [newListTitle, setNewListTitle] = useState('');
+
     const [editingBoardId, setEditingBoardId] = useState<string | null>(null) ;
     const [newBoardTitle, setNewBoardTitle] = useState('') ;
 
     const [board, setBoard] = useState<BoardModel[]>(initialBoards) ;
     const boardTitle = "Bienvenido/a Pendientes App";
+
+
+
+    const handleEditListStart = (listToEdit: ListModel) => {
+        setEditingListId(listToEdit.id) ;
+        setNewListTitle(listToEdit.content) ;
+    }
+
+    const handleCancelEditList = () => {
+        setEditingListId(null);
+        setNewListTitle('');
+    };
+
+    const handleSaveListTitle = (listId: string, boardId: string) => {
+        if (newListTitle == '') {
+            alert('El título de la lista no puede estar vacío.');
+            return;
+        }
+
+        const updatedBoards = board.map(boardModel => {
+            if (boardModel.id == boardId) {
+
+                const updatedLists = boardModel.lists.map(listModel => {
+                    if (listModel.id == listId) {
+                        return { ...listModel, content: newListTitle };
+                    }
+                    return listModel ;
+                });
+                return{
+                    ...boardModel,
+                    lists: updatedLists
+                };
+            }
+            return boardModel;
+        });
+
+        setBoard(updatedBoards);
+        setEditingListId(null); 
+    };
+
+
+
 
 
     const handleEditBoardStart = (boardToEdit: BoardModel) => {
@@ -45,6 +90,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
 
     const handleCancelEditBoard = () => {
         setEditingBoardId(null);
+        setNewBoardTitle('');
     };
 
 
@@ -112,45 +158,56 @@ const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
     };
 
 
-    const renderBoardItem = ({ item }: { item: BoardModel }) => (
+    const renderBoardItem = ({ item }: { item: BoardModel}) => (
         <BoardCard
             key={item.id}
             boardId= {item.id}
             boardTitle= {item.title}
+            
             listModel={item.lists}
-            isEditing={editingBoardId == item.id}
-            newBoardTitle={newBoardTitle}
-            onChangeBoardTitle={setNewBoardTitle}
             onAddListPress={() => handleAddList(item.id)}
             onListPress = {handleListPress}
+
+            isEditingBoardId={editingBoardId == item.id}
+            newBoardTitle={newBoardTitle}
+            onChangeBoardTitle={setNewBoardTitle}
+            
             onEditBoardPress={() => handleEditBoardStart(item)}
             onSaveBoardPress = {handleSaveBoardTitle}
-            onCancelPress={handleCancelEditBoard}
+            onCancelBoardPress={handleCancelEditBoard}
+            
+            isEditingListId={editingListId} 
+            newListTitle={newListTitle}   
+            onChangeListTitle={setNewListTitle}
+
+            onEditListPress={handleEditListStart}
+            onSaveListPress={handleSaveListTitle}
+            onCancelListPress={handleCancelEditList}
         />
     );
 
 
-    return (
-        <View style = {styles.container}>
-            <Text style = {styles.welcomeText}> 
-                {boardTitle}
-            </Text>
+        return (
+            <View style = {styles.container}>
+                <Text style = {styles.welcomeText}> 
+                    {boardTitle}
+                </Text>
 
-            <FlatList
-                style={styles.boardList}
-                contentContainerStyle={styles.boardListContent}
-                data = {board}
-                keyExtractor={(item) => item.id}
-                renderItem={renderBoardItem}
-            />
-            <View style={styles.addButtonContainer}>
-                <AddButton
-                    onPress = {handleAddBoard}
+                <FlatList
+                    style={styles.boardList}
+                    contentContainerStyle={styles.boardListContent}
+                    data = {board}
+                    keyExtractor={(item) => item.id}
+                    renderItem={renderBoardItem}
                 />
+                <View style={styles.addButtonContainer}>
+                    <AddButton
+                        onPress = {handleAddBoard}
+                    />
+                </View>
             </View>
-        </View>
-    );
-};
+        );
+    };
 
 const styles = StyleSheet.create({
     container: {
