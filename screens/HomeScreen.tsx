@@ -2,11 +2,14 @@ import React from 'react';
 import {Text, View, StyleSheet, FlatList, TextInput } from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from './NavigationTypes';
-import { useState } from 'react';
+import { useState, useEffect  } from 'react';
 import BoardCard from '../components/BoardCard';
 import { ListModel } from '../models/ListModel';
 import AddButton from '../components/AddButton';
 import { BoardModel } from '../models/BoardModel';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+
 
 
 
@@ -39,6 +42,44 @@ const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
 
     const [board, setBoard] = useState<BoardModel[]>(initialBoards) ;
     const boardTitle = "Bienvenido/a Pendientes App";
+
+
+
+    const STORAGE_KEY = '@BoardData';
+
+    useEffect(() => {
+        const saveBoards = async () => {
+            try {
+                const jsonValue = JSON.stringify(board);
+                await AsyncStorage.setItem(STORAGE_KEY, jsonValue);
+                console.log('Datos guardados en AsyncStorage.');
+            } catch (e) {
+                console.error('Error al guardar datos:', e);
+            }
+        };
+        saveBoards();
+    },
+    [board]
+    );
+
+
+
+    useEffect(() => {
+        const loadBoards = async () => {
+            try {
+                const jsonValue = await AsyncStorage.getItem(STORAGE_KEY);
+                if (jsonValue != null) {
+                    setBoard(JSON.parse(jsonValue));
+                }
+            } catch (e) {
+                console.error('Error al cargar datos:', e);
+            }
+        };
+
+        loadBoards();
+    }, 
+    []
+    ); 
 
 
 
