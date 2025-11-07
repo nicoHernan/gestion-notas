@@ -153,7 +153,7 @@ const ListDetailScreen: React.FC<ListDetailScreenProps> = ({ route, navigation }
 
 const styles = StyleSheet.create({
     container: {
-        backgroundColor: '#c6fad9ff',
+        backgroundColor: '#a4fff7',
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
