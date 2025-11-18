@@ -1,5 +1,5 @@
 import React from 'react';
-import {Text, View, StyleSheet, FlatList, TextInput } from 'react-native';
+import {Button,Text, View, StyleSheet, FlatList, TextInput } from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from './NavigationTypes';
 import { useState, useEffect  } from 'react';
@@ -81,7 +81,9 @@ const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
     []
     ); 
 
-
+    const handleLogOut = () => {
+        navigation.navigate('Profile');
+    };
 
     const handleEditListStart = (listToEdit: ListModel) => {
         setEditingListId(listToEdit.id) ;
@@ -230,6 +232,16 @@ const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
 
         return (
             <View style = {styles.container}>
+
+                <View style={styles.logOutButtonContainer}>
+                    <Button 
+                        title="Cerrar Sesión" 
+                        onPress={handleLogOut} 
+                        color="#F3722C"
+                    />
+                </View>
+
+
                 <Text style = {styles.welcomeText}> 
                     {boardTitle}
                 </Text>
@@ -254,12 +266,11 @@ const styles = StyleSheet.create({
     container: {
         backgroundColor: '#c6fad9ff',
         flex: 1,
-        justifyContent: 'center',
         alignItems: 'center',
     },
     welcomeText: {
         fontSize: 21,
-        marginTop: 30,
+        marginTop: 80,
         marginBottom: 20
     },
     boardList: {
@@ -275,6 +286,12 @@ const styles = StyleSheet.create({
         bottom: 30, 
         right: 20,
         zIndex: 10, 
+    },
+    logOutButtonContainer: {
+        position: 'absolute',
+        top: 40,
+        right: 20,
+        zIndex: 10,
     }
 });
 

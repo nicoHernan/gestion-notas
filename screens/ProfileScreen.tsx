@@ -10,6 +10,12 @@ type ProfileScreenProps = {
 };
 
 const ProfileScreen : React.FC<ProfileScreenProps> = ({navigation}) => {
+
+    const handleGuestLogin = () => {
+        navigation.navigate('Home');
+    };
+
+
     return (
         <View style={styles.container}>
             
@@ -56,7 +62,11 @@ const ProfileScreen : React.FC<ProfileScreenProps> = ({navigation}) => {
                 <View style={styles.separator} />
 
 
-                <TouchableOpacity style={styles.guestButton}>
+                <TouchableOpacity 
+                    style={styles.guestButton}
+                    onPress={handleGuestLogin}
+                >
+                    
                     <Icon 
                         name="eye-off-outline" 
                         size={20} 

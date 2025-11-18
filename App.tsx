@@ -38,7 +38,7 @@ const App: React.FC = () => {
  return (
     <NavigationContainer>
         <Tab.Navigator
-        initialRouteName = "Home"
+        initialRouteName = "Profile"
         screenOptions = {({ route }) => ({
             headerShown: false,
         tabBarIcon: ({ color, size }) => {
